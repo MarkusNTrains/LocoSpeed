@@ -8,11 +8,24 @@
 #include <SPI.h> // Not needed when using I2C
 #include <Wire.h> //I2C library
 #include <Adafruit_GFX.h>
-#include <Adafruit_SH1106.h>  // use this library for a 1.3 inch OLED https://github.com/wonho-maker/Adafruit_SH1106
+//#include <Adafruit_SH1106.h>  // use this library for a 1.3 inch OLED https://github.com/wonho-maker/Adafruit_SH1106
+#include <Adafruit_SSD1306.h>  // use this library for a 0.96" OLED
 #define SCREEN_WIDTH 128 // OLED display width, in pixels
 #define SCREEN_HEIGHT 64 // OLED display height, in pixels
 #define OLED_RESET 4
-Adafruit_SH1106 display(OLED_RESET); // 1.3 INCH OLED DISPLAY INIT
+//Adafruit_SH1106 display(OLED_RESET); // 1.3 INCH OLED DISPLAY INIT
+
+
+// Declaration for SSD1306 display connected using software SPI (default case):
+#define OLED_MOSI   9
+#define OLED_CLK   10
+#define OLED_DC    11
+#define OLED_CS    12
+#define OLED_RESET 13
+Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT,
+  OLED_MOSI, OLED_CLK, OLED_DC, OLED_RESET, OLED_CS);
+
+
 
 //Distance from sensor Left to sensor Right - your distance (mm)
 const double distance = 130.0;
@@ -200,8 +213,16 @@ void underprogress_display() {
   display.display();
 }
 
-void initialize_display() {
-  display.begin(SH1106_SWITCHCAPVCC, 0x3C); // initialize 1.3" OLED display (use adresse 0x3D for original Adafruit product)
+void initialize_display() 
+{
+  // SSD1306_SWITCHCAPVCC = generate display voltage from 3.3V internally
+  if(!display.begin(SSD1306_SWITCHCAPVCC)) {
+    Serial.println(F("SSD1306 allocation failed"));
+    for(;;); // Don't proceed, loop forever
+  }
+
+  
+  //display.begin(SH1106_SWITCHCAPVCC, 0x3C); // initialize 1.3" OLED display (use adresse 0x3D for original Adafruit product)
   display.display();
   display.clearDisplay();
   display.display();
@@ -209,14 +230,15 @@ void initialize_display() {
 
   display.clearDisplay();
   display.setTextSize(1);
-  display.setCursor(6, 15);
-  display.println("Siebi likes Trains");
+  display.setCursor(4, 4);
+  display.println("MarkusNTrains");
+  display.drawFastHLine(2, 25, 120, WHITE);
   display.setTextSize(2);
-  display.setCursor(2, 38);
-  display.println("SiebiSpeed");
+  display.setCursor(4, 38);
+  display.println("Loco Speed");
   display.display();
 
-  delay(20000);
+  delay(3000);
   
   display.clearDisplay();
   display.setTextSize(2);
