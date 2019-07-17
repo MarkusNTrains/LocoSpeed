@@ -28,7 +28,7 @@ Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT,
 
 
 //Distance from sensor Left to sensor Right - your distance (mm)
-const double distance = 130.0;
+const double distance = 200.0;
 
 //Your model scale 1/xx
 int scale = 160;
@@ -157,7 +157,7 @@ void refresh_display() {
   display.print("1:");
   display.setCursor(105, 31);
   display.print(scale);
-  display.drawFastHLine(2, 20, 120, WHITE);
+  display.drawFastHLine(0, 20, 128, WHITE);
   display.setTextSize(2);
   display.setCursor(0, 0);
   display.print(deltatime * 0.001);
@@ -187,7 +187,7 @@ void state_ready_display() {
   display.setTextSize(2);
   display.setCursor(30, 45);
   display.print("BEREIT");
-  display.drawFastHLine(2, 24, 120, WHITE);
+  display.drawFastHLine(0, 24, 128, WHITE);
   display.setTextSize(2);
   display.setCursor(37, 0);
   display.print("1:");
@@ -230,9 +230,9 @@ void initialize_display()
 
   display.clearDisplay();
   display.setTextSize(1);
-  display.setCursor(4, 4);
-  display.println("MarkusNTrains");
-  display.drawFastHLine(2, 25, 120, WHITE);
+  display.setCursor(16, 4);
+  display.println("Michas Moba Welt");
+  display.drawFastHLine(0, 25, 128, WHITE);
   display.setTextSize(2);
   display.setCursor(4, 38);
   display.println("Loco Speed");
@@ -244,7 +244,7 @@ void initialize_display()
   display.setTextSize(2);
   display.setCursor(30, 45);
   display.print("BEREIT");
-  display.drawFastHLine(2, 25, 120, WHITE);
+  display.drawFastHLine(0, 25, 128, WHITE);
   display.setTextSize(2);
   display.setCursor(37, 0);
   display.print("1:");
