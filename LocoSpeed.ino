@@ -40,6 +40,9 @@ int waitingtime = 1000;
 long int deltatime, starttime, freetime;
 
 
+bool wait_for_sensor = false;
+
+
 void setup()  {
   //Sensor Input
   pinMode(SENSOR_L, INPUT_PULLUP);
@@ -52,7 +55,8 @@ void setup()  {
   initialize_display();
 }
 
-void loop()  {
+void loop()  
+{
   //waiting for signal, sensor Left
   if (digitalRead(SENSOR_L) == LOW)
   {
@@ -86,6 +90,7 @@ void loop()  {
     }
     
     //state_ready_display();
+    wait_till_sensor_idle();
   }
 
 
@@ -122,9 +127,44 @@ void loop()  {
     }
     
     //state_ready_display();
+    wait_till_sensor_idle();
   }
 
 } //End of loop
+
+
+// wait till sensor values are idle
+void wait_till_sensor_idle(void)
+{
+  int cnt = 0;
+  int debounce = 10;
+  
+  display.drawFastHLine(0, 18, 128, WHITE);
+  display.display();
+
+  Serial.println("ready");
+  /*while (1)
+  {
+    Serial.print("Left ");
+    Serial.print(digitalRead(SENSOR_L));
+    Serial.print("Right ");
+    Serial.println(digitalRead(SENSOR_R));
+    if ((digitalRead(SENSOR_L) == HIGH) && (digitalRead(SENSOR_R) == HIGH))
+    {
+      cnt++;
+      delay(waitingtime/debounce);
+      
+      if (cnt >= debounce)
+      {
+        return;
+      }
+    }
+    else
+    {
+      cnt = 0;
+    }
+  }*/
+}
 
 
 //Output on display
@@ -176,8 +216,9 @@ void refresh_display() {
   display.print("s");
   display.display();
 
-  delay(waitingtime);
+//  delay(waitingtime);
 
+  //display.drawFastHLine(0, 22, 128, WHITE);
 
 }
 
