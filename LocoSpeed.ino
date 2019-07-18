@@ -34,7 +34,7 @@ const double distance = 200.0;
 int scale = 160;
 
 //Waiting time to display results (ms)
-int waitingtime = 8000;
+int waitingtime = 1000;
 
 //Name of variables for time and speed measuring
 long int deltatime, starttime, freetime;
@@ -85,7 +85,7 @@ void loop()  {
       delay (100);
     }
     
-    state_ready_display();
+    //state_ready_display();
   }
 
 
@@ -121,7 +121,7 @@ void loop()  {
       delay (100);
     }
     
-    state_ready_display();
+    //state_ready_display();
   }
 
 } //End of loop
