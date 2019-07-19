@@ -34,7 +34,7 @@ const double distance = 200.0;
 int scale = 160;
 
 //Waiting time to display results (ms)
-int waitingtime = 1000;
+//int waitingtime = 1000;
 
 //Name of variables for time and speed measuring
 long int deltatime, starttime, freetime;
@@ -69,28 +69,10 @@ void loop()
     //Measured time in ms
     deltatime = (millis() - starttime);
 
-    refresh_display();
-    freetime = 0;
-    if (digitalRead(SENSOR_R) == LOW)
-    {
-      
-      freetime = 0;  
-      while (freetime < 20)
-      {
-        freetime++;
-   
-        if (digitalRead(SENSOR_R) == LOW)
-        {
-          freetime = 0;  //reset time with new occupation
-        }
-        delay (100);
-     
-      }
-      delay (100);
-    }
-    
-    //state_ready_display();
-    wait_till_sensor_idle();
+    show_result();
+
+    wait_till_sensor_idle();    
+    show_ready_in_header();
   }
 
 
@@ -106,30 +88,11 @@ void loop()
     //Measured time in ms
     deltatime = (millis() - starttime);
 
-    refresh_display();
-    freetime = 0;
-    if (digitalRead(SENSOR_L) == LOW)
-    {
-      
-      freetime = 0; 
-      while (freetime < 20)
-      {
-        freetime++;
-        
-        if (digitalRead(SENSOR_L) == LOW)
-        {
-          freetime = 0;  //reset time with new occupation
-        }
-        delay (100);
-     
-      }
-      delay (100);
-    }
-    
-    //state_ready_display();
-    wait_till_sensor_idle();
-  }
+    show_result();
 
+    wait_till_sensor_idle();    
+    show_ready_in_header();
+  }
 } //End of loop
 
 
@@ -137,38 +100,41 @@ void loop()
 void wait_till_sensor_idle(void)
 {
   int cnt = 0;
-  int debounce = 10;
+  int debounce = 3000;
+  int debounce_sleep = 1;
   
-  display.drawFastHLine(0, 18, 128, WHITE);
-  display.display();
-
-  Serial.println("ready");
-  /*while (1)
+  while (cnt < debounce)
   {
-    Serial.print("Left ");
-    Serial.print(digitalRead(SENSOR_L));
-    Serial.print("Right ");
-    Serial.println(digitalRead(SENSOR_R));
     if ((digitalRead(SENSOR_L) == HIGH) && (digitalRead(SENSOR_R) == HIGH))
     {
       cnt++;
-      delay(waitingtime/debounce);
-      
-      if (cnt >= debounce)
-      {
-        return;
-      }
     }
     else
     {
       cnt = 0;
     }
-  }*/
+    delay(debounce_sleep);
+  }
+}
+
+
+// display ready text in header
+void show_ready_in_header(void)
+{
+  display.fillRect(0, 0, 128, 16, BLACK);
+  
+  display.setTextSize(2);
+  display.setCursor(30, 0);
+  display.print("BEREIT");
+  
+  display.display();
+
+  Serial.println("ready");  
 }
 
 
 //Output on display
-void refresh_display() {
+void show_result() {
 
   //Output on serial monitor
   Serial.println("Messung läuft..");
@@ -215,11 +181,6 @@ void refresh_display() {
   display.setCursor(121, 8);
   display.print("s");
   display.display();
-
-//  delay(waitingtime);
-
-  //display.drawFastHLine(0, 22, 128, WHITE);
-
 }
 
 void state_ready_display() {
