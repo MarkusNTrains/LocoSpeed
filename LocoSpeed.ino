@@ -1,3 +1,17 @@
+/*******************************************************************************
+Project   Loco Speed
+
+  This is an OpenSource Project.
+  You can use, share or improve this project. If you improve this source code
+  please share with the comunity or at least with the author of the original 
+  source code
+
+  Based on https://n-modellbahn.de/moba-speed/
+  Modified 19. July 2019 by MarkusNTrains
+================================================================================
+$HeadURL:  $
+$Id:  $
+*******************************************************************************/
 
 
 // Digital sensor input Left and Right
