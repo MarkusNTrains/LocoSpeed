@@ -1,4 +1,21 @@
+/*******************************************************************************
+Project   LocoSpeed
 
+  This is an OpenSource Project.
+  You can use, share or improve this project. If you improve this source code
+  please share with the comunity or at least with the author of the original 
+  source code
+  
+  Created 03. September 2019 by MarkusNTrains
+================================================================================
+$HeadURL:  $
+$Id:  $
+*******************************************************************************/
+
+// used displays
+#define OLED_DISPLAY_SSD1306_I2C
+//#define OLED_DISPLAY_SSD1306_SPI
+//#define OLED_DISPLAY_SH1106_I2C
 
 // Digital sensor input Left and Right
 #define SENSOR_L 7
@@ -8,23 +25,35 @@
 #include <SPI.h> // Not needed when using I2C
 #include <Wire.h> //I2C library
 #include <Adafruit_GFX.h>
-//#include <Adafruit_SH1106.h>  // use this library for a 1.3 inch OLED https://github.com/wonho-maker/Adafruit_SH1106
-#include <Adafruit_SSD1306.h>  // use this library for a 0.96" OLED
+#ifdef OLED_DISPLAY_SH1106_I2C
+  #include <Adafruit_SH1106.h>  // use this library for a 1.3 inch OLED https://github.com/wonho-maker/Adafruit_SH1106
+#endif
+#if defined(OLED_DISPLAY_SSD1306_SPI) || defined(OLED_DISPLAY_SSD1306_I2C)
+  #include <Adafruit_SSD1306.h>  // use this library for a 0.96" OLED
+#endif
 #define SCREEN_WIDTH 128 // OLED display width, in pixels
 #define SCREEN_HEIGHT 64 // OLED display height, in pixels
 #define OLED_RESET 4
-//Adafruit_SH1106 display(OLED_RESET); // 1.3 INCH OLED DISPLAY INIT
 
 
-// Declaration for SSD1306 display connected using software SPI (default case):
-#define OLED_MOSI   9
-#define OLED_CLK   10
-#define OLED_DC    11
-#define OLED_CS    12
-#define OLED_RESET 13
-Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT,
-  OLED_MOSI, OLED_CLK, OLED_DC, OLED_RESET, OLED_CS);
+#ifdef OLED_DISPLAY_SH1106_I2C
+  Adafruit_SH1106 display(OLED_RESET); // 1.3 INCH OLED DISPLAY INIT
+#endif
 
+#ifdef OLED_DISPLAY_SSD1306_I2C
+  Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);  
+#endif
+
+#ifdef OLED_DISPLAY_SSD1306_SPI 
+  // Declaration for SSD1306 display connected using software SPI (default case):
+  #define OLED_MOSI   9
+  #define OLED_CLK   10
+  #define OLED_DC    11
+  #define OLED_CS    12
+  #define OLED_RESET 13
+  Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT,
+    OLED_MOSI, OLED_CLK, OLED_DC, OLED_RESET, OLED_CS);
+#endif
 
 
 //Distance from sensor Left to sensor Right - your distance (mm)
@@ -256,12 +285,19 @@ void underprogress_display() {
 
 void initialize_display() 
 {
-  // SSD1306_SWITCHCAPVCC = generate display voltage from 3.3V internally
-  if(!display.begin(SSD1306_SWITCHCAPVCC)) {
-    Serial.println(F("SSD1306 allocation failed"));
-    for(;;); // Don't proceed, loop forever
-  }
-
+  #ifdef OLED_DISPLAY_SSD1306_I2C
+    // SSD1306_SWITCHCAPVCC = generate display voltage from 3.3V internally
+    if(!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) { // Address 0x3C for 128x64
+      Serial.println(F("SSD1306 allocation failed"));
+      for(;;); // Don't proceed, loop forever
+    }
+  #elif defined(OLED_DISPLAY_SSD1306_SPI)
+    // SSD1306_SWITCHCAPVCC = generate display voltage from 3.3V internally
+    if(!display.begin(SSD1306_SWITCHCAPVCC)) {
+      Serial.println(F("SSD1306 allocation failed"));
+      for(;;); // Don't proceed, loop forever
+    }
+  #endif
   
   //display.begin(SH1106_SWITCHCAPVCC, 0x3C); // initialize 1.3" OLED display (use adresse 0x3D for original Adafruit product)
   display.display();
@@ -271,8 +307,8 @@ void initialize_display()
 
   display.clearDisplay();
   display.setTextSize(1);
-  display.setCursor(16, 4);
-  display.println("Michas Moba Welt");
+  display.setCursor(25, 4);
+  display.println("MarkusNTrains");
   display.drawFastHLine(0, 25, 128, WHITE);
   display.setTextSize(2);
   display.setCursor(4, 38);
