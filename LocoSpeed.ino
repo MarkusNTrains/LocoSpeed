@@ -1,21 +1,5 @@
 /*******************************************************************************
-<<<<<<< HEAD
 Project   LocoSpeed
-=======
-Project   Loco Speed
-
-  This is an OpenSource Project.
-  You can use, share or improve this project. If you improve this source code
-  please share with the comunity or at least with the author of the original 
-  source code
-
-  Based on https://n-modellbahn.de/moba-speed/
-  Modified 19. July 2019 by MarkusNTrains
-================================================================================
-$HeadURL:  $
-$Id:  $
-*******************************************************************************/
->>>>>>> 17331c2d5b7b946048733930a422ea1f2e8b3f45
 
   This is an OpenSource Project.
   You can use, share or improve this project. If you improve this source code
@@ -79,7 +63,7 @@ const double distance = 200.0;
 int scale = 160;
 
 //Waiting time to display results (ms)
-//int waitingtime = 1000;
+int waitingtime = 1000;
 
 //Name of variables for time and speed measuring
 long int deltatime, starttime, freetime;
@@ -114,10 +98,28 @@ void loop()
     //Measured time in ms
     deltatime = (millis() - starttime);
 
-    show_result();
-
-    wait_till_sensor_idle();    
-    show_ready_in_header();
+    refresh_display();
+    freetime = 0;
+    if (digitalRead(SENSOR_R) == LOW)
+    {
+      
+      freetime = 0;  
+      while (freetime < 20)
+      {
+        freetime++;
+   
+        if (digitalRead(SENSOR_R) == LOW)
+        {
+          freetime = 0;  //reset time with new occupation
+        }
+        delay (100);
+     
+      }
+      delay (100);
+    }
+    
+    //state_ready_display();
+    wait_till_sensor_idle();
   }
 
 
@@ -133,11 +135,30 @@ void loop()
     //Measured time in ms
     deltatime = (millis() - starttime);
 
-    show_result();
-
-    wait_till_sensor_idle();    
-    show_ready_in_header();
+    refresh_display();
+    freetime = 0;
+    if (digitalRead(SENSOR_L) == LOW)
+    {
+      
+      freetime = 0; 
+      while (freetime < 20)
+      {
+        freetime++;
+        
+        if (digitalRead(SENSOR_L) == LOW)
+        {
+          freetime = 0;  //reset time with new occupation
+        }
+        delay (100);
+     
+      }
+      delay (100);
+    }
+    
+    //state_ready_display();
+    wait_till_sensor_idle();
   }
+
 } //End of loop
 
 
@@ -145,41 +166,38 @@ void loop()
 void wait_till_sensor_idle(void)
 {
   int cnt = 0;
-  int debounce = 3000;
-  int debounce_sleep = 1;
+  int debounce = 10;
   
-  while (cnt < debounce)
+  display.drawFastHLine(0, 18, 128, WHITE);
+  display.display();
+
+  Serial.println("ready");
+  /*while (1)
   {
+    Serial.print("Left ");
+    Serial.print(digitalRead(SENSOR_L));
+    Serial.print("Right ");
+    Serial.println(digitalRead(SENSOR_R));
     if ((digitalRead(SENSOR_L) == HIGH) && (digitalRead(SENSOR_R) == HIGH))
     {
       cnt++;
+      delay(waitingtime/debounce);
+      
+      if (cnt >= debounce)
+      {
+        return;
+      }
     }
     else
     {
       cnt = 0;
     }
-    delay(debounce_sleep);
-  }
-}
-
-
-// display ready text in header
-void show_ready_in_header(void)
-{
-  display.fillRect(0, 0, 128, 16, BLACK);
-  
-  display.setTextSize(2);
-  display.setCursor(30, 0);
-  display.print("BEREIT");
-  
-  display.display();
-
-  Serial.println("ready");  
+  }*/
 }
 
 
 //Output on display
-void show_result() {
+void refresh_display() {
 
   //Output on serial monitor
   Serial.println("Messung läuft..");
@@ -226,6 +244,11 @@ void show_result() {
   display.setCursor(121, 8);
   display.print("s");
   display.display();
+
+//  delay(waitingtime);
+
+  //display.drawFastHLine(0, 22, 128, WHITE);
+
 }
 
 void state_ready_display() {
@@ -274,9 +297,10 @@ void initialize_display()
       Serial.println(F("SSD1306 allocation failed"));
       for(;;); // Don't proceed, loop forever
     }
+  #elif defined(OLED_DISPLAY_SH1106_I2C)
+    display.begin(SH1106_SWITCHCAPVCC, 0x3C); // initialize 1.3" OLED display (use adresse 0x3D for original Adafruit product)
   #endif
   
-  //display.begin(SH1106_SWITCHCAPVCC, 0x3C); // initialize 1.3" OLED display (use adresse 0x3D for original Adafruit product)
   display.display();
   display.clearDisplay();
   display.display();
