@@ -1,8 +1,10 @@
 = LocoSpeed for Arduino =
 
-This is project to measure the speed of modell train
+This is a project to measure the speed of a modell train
+You need an Arduino Nano Board, one OLED I2C display and two light barriers
 
-For more information about this library please visit us at
+For more information about this project, watch this video:
+
 
 
 == License ==
