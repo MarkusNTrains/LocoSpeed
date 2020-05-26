@@ -5,13 +5,15 @@ Project   Loco Speed
   please share with the comunity or at least with the author of the original 
   source code
   Based on https://n-modellbahn.de/moba-speed/
-  Modified 19. July 2019 by MarkusNTrains
+  Modified 26. May 2020 by MarkusNTrains
 ================================================================================
 $HeadURL:  $
 $Id:  $
 *******************************************************************************/
 
 
+//-----------------------------------------------------------------------------
+// defines
 // used displays
 #define OLED_DISPLAY_SSD1306_I2C
 //#define OLED_DISPLAY_SSD1306_SPI
@@ -57,6 +59,8 @@ $Id:  $
 
 
 
+//-----------------------------------------------------------------------------
+// static variables
 //Distance from sensor Left to sensor Right - your distance (mm)
 const double distance = 200.0;
 
@@ -69,11 +73,19 @@ int scale = 160;
 //Name of variables for time and speed measuring
 long int deltatime, starttime, freetime;
 
-
+// wait for second sensor
 bool wait_for_sensor = false;
 
+// count nof measurements
+int measure_cnt = 0;
 
-void setup()  {
+
+//*****************************************************************************
+// description:
+//   Initial Function
+//*****************************************************************************
+void setup()  
+{
   //Sensor Input
   pinMode(SENSOR_L, INPUT_PULLUP);
   pinMode(SENSOR_R, INPUT_PULLUP);
@@ -85,6 +97,11 @@ void setup()  {
   initialize_display();
 }
 
+
+//*****************************************************************************
+// description:
+//   Endless loop
+//*****************************************************************************
 void loop()  
 {
   //waiting for signal, sensor Left
@@ -126,7 +143,10 @@ void loop()
 } //End of loop
 
 
-// wait till sensor values are idle
+//*****************************************************************************
+// description:
+//   wait till sensor values are idle
+//*****************************************************************************
 void wait_till_sensor_idle(void)
 {
   int cnt = 0;
@@ -148,7 +168,10 @@ void wait_till_sensor_idle(void)
 }
 
 
-// display ready text in header
+//*****************************************************************************
+// description:
+//   display ready text in header
+//*****************************************************************************
 void show_ready_in_header(void)
 {
   display.fillRect(0, 0, 128, 16, BLACK);
@@ -163,9 +186,15 @@ void show_ready_in_header(void)
 }
 
 
-//Output on display
-void show_result() {
-
+//*****************************************************************************
+// description:
+//   show result
+//*****************************************************************************
+void show_result() 
+{
+  // increment measure cnt
+  measure_cnt++;
+  
   //Output on serial monitor
   Serial.println("Messung läuft..");
   Serial.println("");
@@ -192,7 +221,8 @@ void show_result() {
   display.setCursor(91, 31);
   display.print("1:");
   display.setCursor(105, 31);
-  display.print(scale);
+  //display.print(scale);
+  display.print(measure_cnt);
   display.drawFastHLine(0, 20, 128, WHITE);
   display.setTextSize(2);
   display.setCursor(0, 0);
@@ -213,8 +243,13 @@ void show_result() {
   display.display();
 }
 
-void state_ready_display() {
 
+//*****************************************************************************
+// description:
+//   state_ready_display
+//*****************************************************************************
+void state_ready_display() 
+{
   display.clearDisplay();
   display.setTextSize(2);
   display.setCursor(30, 45);
@@ -231,8 +266,13 @@ void state_ready_display() {
   Serial.println("<<< Bereit >>>");
 }
 
-void underprogress_display() {
 
+//*****************************************************************************
+// description:
+//   display under progress
+//*****************************************************************************
+void underprogress_display() 
+{
   display.clearDisplay();
   display.setTextSize(2);
   display.setCursor(0, 20);
@@ -245,6 +285,11 @@ void underprogress_display() {
   display.display();
 }
 
+
+//*****************************************************************************
+// description:
+//   initialize display
+//*****************************************************************************
 void initialize_display() 
 {
   #ifdef OLED_DISPLAY_SSD1306_I2C
